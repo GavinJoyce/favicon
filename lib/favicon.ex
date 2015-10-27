@@ -2,9 +2,12 @@ defmodule Favicon do
   def fetch(url) do
     HTTPoison.start
     hackney = [follow_redirect: true]
-    case HTTPoison.get(url, [], [hackney: hackney]) do
+    uri = URI.parse(url)
+    domain = "#{uri.scheme}://#{uri.host}"
+
+    case HTTPoison.get(domain, [], [hackney: hackney]) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        find_favicon_url(url, body)
+        find_favicon_url(domain, body)
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, "404 not found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -12,16 +15,20 @@ defmodule Favicon do
     end
   end
 
-  defp find_favicon_url(url, body) do
+  defp find_favicon_url(domain, body) do
     tag = find_favicon_link_tag(body)
     if tag do
       {"link", attrs, _} = tag
       {"href", path} = Enum.find(attrs, fn({name, _}) ->
         name == "href"
       end)
-      {:ok, "#{url}#{path}"}
+      if String.starts_with?(path, "/") do
+        {:ok, "#{domain}#{path}"}
+      else
+        {:ok, "#{domain}/#{path}"}
+      end
     else
-      find_favicon_in_root(url)
+      find_favicon_in_root(domain)
     end
   end
 
@@ -34,9 +41,8 @@ defmodule Favicon do
     end)
   end
 
-  defp find_favicon_in_root(url) do
-    uri = URI.parse(url)
-    favicon_url = "#{uri.scheme}://#{uri.host}/favicon.ico"
+  defp find_favicon_in_root(domain) do
+    favicon_url = "#{domain}/favicon.ico"
     case HTTPoison.get(favicon_url) do
       {:ok, %HTTPoison.Response{status_code: 200}} ->
         {:ok, favicon_url}

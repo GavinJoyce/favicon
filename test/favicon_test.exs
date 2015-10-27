@@ -41,4 +41,13 @@ defmodule FaviconTest do
     {:ok, result} = Favicon.fetch(url)
     assert result == "https://trello.com/favicon.ico"
   end
+
+  test "try with a non html url" do
+    url = "http://a-eon.biz/PDF/News_Release_Developer.pdf"
+    {:ok, result} = Favicon.fetch(url)
+    assert result == "http://a-eon.biz/images/favicon.png"
+  end
+
+  # try with differnt port
+  # try some sort of subdomain
 end
