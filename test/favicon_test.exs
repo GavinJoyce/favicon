@@ -1,5 +1,5 @@
 defmodule FaviconTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Favicon
 
   test "fetch nordea.se favicon" do
