@@ -1,6 +1,6 @@
 # Favicon
 
-**TODO: Add description**
+A library that fetches the favicon url for a specified url
 
 ## Installation
 
