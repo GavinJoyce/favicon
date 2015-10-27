@@ -20,6 +20,12 @@ defmodule FaviconTest do
     assert result == "http://hexdocs.pm/favicon.ico"
   end
 
+  test "fetch one with absolute favicon url in link tag" do
+    url = "https://github.com"
+    {:ok, result} = Favicon.fetch(url)
+    assert result == "https://github.com/fluidicon.png"
+  end
+
   test "try fetch with non existent domain" do
     url = "http://thisurldoesnotexists.com"
     {:error, :nxdomain} = Favicon.fetch(url)
