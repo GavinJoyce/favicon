@@ -22,8 +22,9 @@ defmodule Favicon do
       {"href", path} = Enum.find(attrs, fn({name, _}) ->
         name == "href"
       end)
+      uri = URI.parse(domain)
       cond do
-        String.starts_with?(path, domain) ->
+        String.contains?(path, uri.host) ->
           {:ok, "#{path}"} # the favicon is an absolute path
         String.starts_with?(path, "/") ->
           {:ok, "#{domain}#{path}"} # relative path starting with /
