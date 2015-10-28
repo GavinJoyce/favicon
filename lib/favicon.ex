@@ -28,12 +28,15 @@ defmodule Favicon do
   end
 
   defp format_url(domain, path) do
-    uri = URI.parse(domain)
+    uri_domain_host = URI.parse(domain).host
+    uri_path_host = URI.parse(path).host
     cond do
-      String.contains?(path, uri.host) ->
-        "#{path}" # the favicon is an absolute path
-      String.starts_with?(path, "/") ->
-        "#{domain}#{path}" # relative path starting with /
+      uri_domain_host && uri_path_host && uri_domain_host != uri_path_host -> # favicon is on another domain
+        "#{path}"
+      String.contains?(path, uri_domain_host) -> # the favicon is an absolute path (within the same domain)
+        "#{path}"
+      String.starts_with?(path, "/") -> # relative path starting with /
+        "#{domain}#{path}"
       true ->
         "#{domain}/#{path}"
     end

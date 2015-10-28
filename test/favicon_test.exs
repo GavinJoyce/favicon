@@ -26,6 +26,12 @@ defmodule FaviconTest do
     assert result == "https://github.com/fluidicon.png"
   end
 
+  test "fetch from an url with favicon on another domain" do
+    url = "http://www.phoenixframework.org/"
+    {:ok, result} = Favicon.fetch(url)
+    assert result == "https://www.filepicker.io/api/file/PQcrhfwISl6TGbtmLCc7"
+  end
+
   test "try fetch with non existent domain" do
     url = "http://thisurldoesnotexists.com"
     {:error, :nxdomain} = Favicon.fetch(url)
