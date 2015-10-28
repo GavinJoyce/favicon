@@ -2,10 +2,10 @@ defmodule FaviconTest do
   use ExUnit.Case, async: true
   doctest Favicon
 
-  test "fetch nordea.se favicon" do
-    url = "http://www.nordea.se"
+  test "fetch google favicon" do
+    url = "http://www.google.com"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "#{url}/favicon.ico"
+    assert result == "http://www.google.com/images/branding/product/ico/googleg_lodp.ico"
   end
 
   test "fetch favicon from facebook.com (redirects http to https)" do
@@ -26,12 +26,6 @@ defmodule FaviconTest do
     assert result == "https://github.com/fluidicon.png"
   end
 
-  test "fetch another url with absolute favicon url in link tag" do
-    url = "http://idg.se" # no www
-    {:ok, result} = Favicon.fetch(url)
-    assert result == "http://www.idg.se/polopoly_fs/2.109.1445945480!homescreenIcon/imageTypeSelector/localImage/2336775096.png"
-  end
-
   test "try fetch with non existent domain" do
     url = "http://thisurldoesnotexists.com"
     {:error, :nxdomain} = Favicon.fetch(url)
@@ -42,22 +36,16 @@ defmodule FaviconTest do
     assert {:error, :favicon_missing} == Favicon.fetch(url)
   end
 
-  test "fetch non authorized url" do
-    url = "https://trello.com/b/OeZ2BmXa/blackdocio"
-    {:ok, result} = Favicon.fetch(url)
-    assert result == "https://trello.com/favicon.ico"
-  end
-
   test "fetch 404 url" do
-    url = "https://trello.com/molasricny"
+    url = "https://google.com/404"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "https://trello.com/favicon.ico"
+    assert result == "https://google.com/images/branding/product/ico/googleg_lodp.ico"
   end
 
   test "fetch a non html url" do
-    url = "http://a-eon.biz/PDF/News_Release_Developer.pdf"
+    url = "https://google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "http://a-eon.biz/images/favicon.png"
+    assert result == "https://google.com/images/branding/product/ico/googleg_lodp.ico"
   end
 
   # TODO: Add a test to see how it behaves with a different port (not 80)

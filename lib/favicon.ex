@@ -16,8 +16,7 @@ defmodule Favicon do
   end
 
   defp find_favicon_url(domain, body) do
-    tag = find_favicon_link_tag(body)
-    if tag do
+    if tag = find_favicon_link_tag(body) do
       {"link", attrs, _} = tag
       {"href", path} = Enum.find(attrs, fn({name, _}) ->
         name == "href"
@@ -51,7 +50,7 @@ defmodule Favicon do
 
   defp find_favicon_in_root(domain) do
     favicon_url = "#{domain}/favicon.ico"
-    case HTTPoison.get(favicon_url) do
+    case HTTPoison.head(favicon_url) do
       {:ok, %HTTPoison.Response{status_code: 200}} ->
         {:ok, favicon_url}
       {:ok, %HTTPoison.Response{status_code: 404}} ->
