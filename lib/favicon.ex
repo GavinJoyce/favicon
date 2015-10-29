@@ -1,4 +1,5 @@
 defmodule Favicon do
+
   def fetch(url) do
     HTTPoison.start
     hackney = [follow_redirect: true]
@@ -32,14 +33,19 @@ defmodule Favicon do
     uri_path_host = URI.parse(path).host
     cond do
       uri_domain_host && uri_path_host && uri_domain_host != uri_path_host -> # favicon is on another domain
-        "#{path}"
+        append_scheme domain, "#{path}"
       String.contains?(path, uri_domain_host) -> # the favicon is an absolute path (within the same domain)
-        "#{path}"
+        append_scheme domain, "#{path}"
       String.starts_with?(path, "/") -> # relative path starting with /
-        "#{domain}#{path}"
+        append_scheme domain, "#{domain}#{path}"
       true ->
-        "#{domain}/#{path}"
+        append_scheme domain, "#{domain}/#{path}"
     end
+  end
+
+  defp append_scheme(domain, favicon_url) do
+    scheme = URI.parse(domain).scheme
+    if String.starts_with?(favicon_url, "//"), do: "#{scheme}:#{favicon_url}", else: favicon_url
   end
 
   defp find_favicon_link_tag(body) do
