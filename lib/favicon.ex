@@ -2,13 +2,16 @@ defmodule Favicon do
 
   def fetch(url) do
     HTTPoison.start
-    hackney = [follow_redirect: true]
     uri = URI.parse(url)
     domain = "#{uri.scheme}://#{uri.host}"
 
-    case HTTPoison.get(domain, [], [hackney: hackney]) do
+    case HTTPoison.get(domain) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         find_favicon_url(domain, body)
+      {:ok, %HTTPoison.Response{status_code: 302, headers: headers}} ->
+        fetch(headers["Location"])
+      {:ok, %HTTPoison.Response{status_code: 301, headers: headers}} ->
+        fetch(headers["Location"])
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, "404 not found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -48,8 +51,8 @@ defmodule Favicon do
     if String.starts_with?(favicon_url, "//"), do: "#{scheme}:#{favicon_url}", else: favicon_url
   end
 
-  defp find_favicon_link_tag(body) do
-    links = Floki.find(body, "link")
+  defp find_favicon_link_tag(html) do
+    links = Floki.find(html, "link")
     Enum.find(links, fn({"link", attrs, _}) ->
       Enum.any?(attrs, fn({name, value}) ->
         name == "rel" && String.contains?(value, "icon") && !String.contains?(value, "-icon-")

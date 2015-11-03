@@ -5,13 +5,13 @@ defmodule FaviconTest do
   test "fetch favicon url from google.com" do
     url = "http://www.google.com"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "http://www.google.com/images/branding/product/ico/googleg_lodp.ico"
+    assert String.ends_with?(result, "googleg_lodp.ico")
   end
 
   test "fetch favicon url from facebook.com (http -> https)" do
     url = "http://www.facebook.com"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "#{url}/icon.svg"
+    assert result == "https://www.facebook.com/icon.svg"
   end
 
   test "fetch favicon url from hexdocs.pm (missing link tag)" do
@@ -45,19 +45,25 @@ defmodule FaviconTest do
   test "try fetch favicon url from 404 url" do
     url = "https://google.com/404"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "https://google.com/images/branding/product/ico/googleg_lodp.ico"
+    assert String.ends_with?(result, "googleg_lodp.ico")
   end
 
   test "fetch favicon url from a non html url" do
     url = "https://google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
     {:ok, result} = Favicon.fetch(url)
-    assert result == "https://google.com/images/branding/product/ico/googleg_lodp.ico"
+    assert String.ends_with?(result, "googleg_lodp.ico")
   end
 
   test "fetch favicon url from an url not specifying http or https in favicon url" do
     url = "http://stackoverflow.com"
     {:ok, result} = Favicon.fetch(url)
     assert result == "http://cdn.sstatic.net/stackoverflow/img/favicon.ico?v=4f32ecc8f43d"
+  end
+
+  test "fetch favicon where 302 redirect happen" do
+    url = "http://tv4.se"
+    {:ok, result} = Favicon.fetch(url)
+    assert result == "http://www.tv4.se/assets/favicon-688189cb2465c86b7f87ab949d14f53f.ico"
   end
 
   # TODO: Add a test to see how it behaves with a different port (not 80)
