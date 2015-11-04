@@ -18,7 +18,7 @@ defmodule Favicon.Mixfile do
 
   defp deps do
     [{:httpoison, "~> 0.7.2"},
-     {:floki, "~> 0.6"}]
+     {:floki, "~> 0.7"}]
   end
 
   defp description do

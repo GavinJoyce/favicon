@@ -66,6 +66,12 @@ defmodule FaviconTest do
     assert result == "http://www.tv4.se/assets/favicon-688189cb2465c86b7f87ab949d14f53f.ico"
   end
 
+  test "fetch from https://twitter.com" do
+    url = "https://twitter.com"
+    {:ok, result} = Favicon.fetch(url)
+    assert result == "https://abs.twimg.com/a/1446542199/img/t1/favicon.svg"
+  end
+
   # TODO: Add a test to see how it behaves with a different port (not 80)
   # TODO: Add a test to see hwo it behaves with subdomains.
 end
