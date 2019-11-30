@@ -9,14 +9,18 @@ defmodule Favicon do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         find_favicon_url(domain, body)
       {:ok, %HTTPoison.Response{status_code: 302, headers: headers}} ->
-        fetch(headers["Location"])
+        fetch(get_location_header(headers))
       {:ok, %HTTPoison.Response{status_code: 301, headers: headers}} ->
-        fetch(headers["Location"])
+        fetch(get_location_header(headers))
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, "404 not found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end
+  end
+
+  defp get_location_header(headers) do
+    Enum.into(headers, %{})["Location"]
   end
 
   defp find_favicon_url(domain, body) do
